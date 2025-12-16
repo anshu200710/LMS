@@ -16,26 +16,36 @@ export const clerkWebhooks = async (req, res) => {
 
     const { type, data } = event;
 
+    console.log(`Clerk webhook received: ${type} for id ${data?.id}`);
+
     // ✅ SAFELY GET EMAIL
     const email =
       data.email_addresses?.[0]?.email_address || "";
 
     switch (type) {
       case "user.created":
-        await User.create({
-          _id: data.id,
-          name: `${data.first_name || ""} ${data.last_name || ""}`,
-          email,
-          image: data.image_url,
-        });
+        // Use upsert to create or update the user safely even if some fields are missing
+        await User.findByIdAndUpdate(
+          data.id,
+          {
+            name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+            email: email || undefined,
+            image: data.image_url || undefined,
+          },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
         break;
 
       case "user.updated":
-        await User.findByIdAndUpdate(data.id, {
-          name: `${data.first_name || ""} ${data.last_name || ""}`,
-          email,
-          image: data.image_url,
-        });
+        await User.findByIdAndUpdate(
+          data.id,
+          {
+            name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+            email: email || undefined,
+            image: data.image_url || undefined,
+          },
+          { new: true }
+        );
         break;
 
       case "user.deleted":
