@@ -1,4 +1,4 @@
-import{ Webhook, webhook} from 'svix'
+import{ Webhook} from 'svix'
 import User from '../models/user.js'
 
 
