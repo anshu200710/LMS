@@ -10,6 +10,7 @@ const app = express();
 await connectDB();
 
 app.use(cors());
+app.use(express.json())
 
 // ❌ REMOVE express.json() globally for webhooks
 // app.use(express.json());
