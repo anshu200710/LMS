@@ -1,42 +1,30 @@
-import './config/instrument.js'
-import express from 'express'
-import cors from 'cors'
-import connectDB from './config/db.js'
-import dotenv from 'dotenv'
-import { clerkWebhooks } from './controllers/webHooks.js'
-
-
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import { clerkWebhooks } from "./controllers/webHooks.js";
 
 dotenv.config();
 
+const app = express();
+await connectDB();
 
+app.use(cors());
 
-// initialize express
-const app = express()
+// ❌ REMOVE express.json() globally for webhooks
+// app.use(express.json());
 
-//connect to databe
-await connectDB()
+// Health check
+app.get("/", (req, res) => res.send("API IS WORKING"));
 
+// ✅ RAW BODY ONLY FOR CLERK
+app.post(
+  "/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
 
-//middlewares
-app.use(cors())
-
-app.use(express.json())
-
-
-// PORT
-const PORT = process.env.PORT || 5003
-
-
-
-// Routes
-app.get('/', (req, res) => res.send('API IS WORKING'))
-app.post('/clerk',express.json(), clerkWebhooks)
-
-
-//
-app.listen(PORT, ()=> {
-    console.log('Your Server Is Running on http://localhost:'+ PORT);
-    
-})
-
+const PORT = process.env.PORT || 5003;
+app.listen(PORT, () =>
+  console.log("Server running on http://localhost:" + PORT)
+);
