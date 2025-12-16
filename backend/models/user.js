@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     // Make email optional and sparse so multiple users without an email can exist
     email: { type: String, unique: true, sparse: true },
     resume: { type: String, default: "" },
-    image: { type: String, default: "" },
+    imageUrl: { type: String, default: "" },
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
 }, { timestamps: true })
 
 
