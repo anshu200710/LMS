@@ -3,27 +3,39 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import { clerkWebhooks } from "./controllers/webHooks.js";
+import educatorRouter from "./routes/educatorRoutes.js";
+import { clerkMiddleware } from "@clerk/express";
+import connectCloudinary from "./config/cloudinary.js";
+import courseRouter from "./routes/courseRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 dotenv.config();
 
 const app = express();
 await connectDB();
+await connectCloudinary()
 
 app.use(cors());
-app.use(express.json())
+app.use(clerkMiddleware())
 
-// ❌ REMOVE express.json() globally for webhooks
-// app.use(express.json());
 
 // Health check
 app.get("/", (req, res) => res.send("API IS WORKING"));
 
-// ✅ RAW BODY ONLY FOR CLERK
+
+app.use("/api/educator", express.json(), educatorRouter);
+app.use('/api/courses', express.json(), courseRouter)
+app.use('/api/user', express.json(), userRouter)
+
+
+
 app.post(
   "/clerk",
   express.raw({ type: "application/json" }),
   clerkWebhooks
 );
+
+app.use(express.json())
 
 const PORT = process.env.PORT || 5003;
 app.listen(PORT, () =>

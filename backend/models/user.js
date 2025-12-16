@@ -2,11 +2,12 @@ import mongoose from "mongoose";
 
 
 const userSchema = new mongoose.Schema({
-    _id: {type: String, required: true},
-    name: {type: String, required: true},
-    email: {type: String, required: true, unique: true},
-    resume: {type: String},
-    image: {type: String, required: true},
+    _id: { type: String, required: true },
+    name: { type: String, default: "" },
+    // Make email optional and sparse so multiple users without an email can exist
+    email: { type: String, unique: true, sparse: true },
+    resume: { type: String, default: "" },
+    image: { type: String, default: "" },
 }, { timestamps: true })
 
 
