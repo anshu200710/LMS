@@ -8,6 +8,7 @@ import { clerkMiddleware } from "@clerk/express";
 import connectCloudinary from "./config/cloudinary.js";
 import courseRouter from "./routes/courseRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import { stripeWebhooks } from "./controllers/webHooks.js";
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ app.get("/", (req, res) => res.send("API IS WORKING"));
 app.use("/api/educator", express.json(), educatorRouter);
 app.use('/api/courses', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
+
+app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks);
 
 
 
