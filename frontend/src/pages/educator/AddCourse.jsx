@@ -118,7 +118,7 @@ const AddCourse = () => {
 
         <div className="flex flex-col gap-1">
           <p>Course Title</p>
-          <input onChange={e => setCourseTitle(e.target.value)} value={courseTitle} type="text" placeholder="Type here" class="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500" required ></input>
+          <input onChange={e => setCourseTitle(e.target.value)} value={courseTitle} type="text" placeholder="Type here" className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500" required ></input>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -131,12 +131,12 @@ const AddCourse = () => {
 
           <div className="flex flex-col gap-1">
             <p>Course Price</p>
-          <input onChange={e => setCoursePrice(e.target.value)}  value="0" type="number" placeholder="0" class="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500" required />
+          <input onChange={e => setCoursePrice(e.target.value)}  value="0" type="number" placeholder="0" className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500" required />
           </div>
 
           <div className="flex md:flex-row flex-col items-center gap-3">
           <p>Course Thumbnail</p>
-          <label for="thumbnailImage" class="flex items-center gap-3">
+          <label for="thumbnailImage" className="flex items-center gap-3">
             <img src={assets.file_upload_icon} alt="" className="p-3 bg-blue-500 rounded" />
              <input type="file" id='thumbnailImage' onChange={e => setImage(e.target.files[0])} accept='image/*' hidden  />
              <img className='max-h-10' src={image ? URL.createObjectURL(image) : ""} alt="" />
@@ -145,7 +145,7 @@ const AddCourse = () => {
 
           <div className="flex flex-col gap-1 mt-4">
             <p>Discount %</p>
-          <input onChange={e => setDiscount(e.target.value)}  value="0" type="number" placeholder="0" class="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500" required />
+          <input onChange={e => setDiscount(e.target.value)}  value="0" type="number" placeholder="0" className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500" required />
           </div>
              
              {/* Adding Chapters & Lectures */}
@@ -261,7 +261,7 @@ const AddCourse = () => {
             )}
         </div>
 
-        <button type="submit" class="bg-black text-white w-max py-2.5 px-8 rounded my-4">ADD</button>
+        <button type="submit" className="bg-black text-white w-max py-2.5 px-8 rounded my-4">ADD</button>
 
        </form>
     </div>

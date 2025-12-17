@@ -13,6 +13,8 @@ import StudentEnrollments from './pages/educator/StudentEnrollments';
 import Navbar from './component/students/Navbar';
 import MyCourses from './pages/educator/MyCourses';
 import "quill/dist/quill.snow.css";
+import { ToastContainer, toast } from "react-toastify";
+
 
 
 const App = () => {
@@ -21,6 +23,7 @@ const App = () => {
 
   return (
     <div className='text-default min-h-screen bg-white'>
+      <ToastContainer />
       {!isEducatorPath && <Navbar />}
 
       <Routes>
