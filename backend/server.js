@@ -17,26 +17,27 @@ await connectDB();
 await connectCloudinary()
 
 app.use(cors());
-app.use(clerkMiddleware())
 
 
 // Health check
 app.get("/", (req, res) => res.send("API IS WORKING"));
 
 
-app.use("/api/educator", express.json(), educatorRouter);
-app.use('/api/courses', express.json(), courseRouter)
-app.use('/api/user', express.json(), userRouter)
-
+// Register webhooks BEFORE body parser and Clerk middleware to ensure raw body is available
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks);
-
-
 
 app.post(
   "/clerk",
   express.raw({ type: "application/json" }),
   clerkWebhooks
 );
+
+// Clerk middleware and regular JSON body parsing for application routes
+app.use(clerkMiddleware())
+
+app.use("/api/educator", express.json(), educatorRouter);
+app.use('/api/courses', express.json(), courseRouter)
+app.use('/api/user', express.json(), userRouter)
 
 app.use(express.json())
 

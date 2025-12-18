@@ -1,27 +1,67 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
 import { Line } from 'rc-progress'
 import Footer from '../../component/students/Footer'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const MyEnrollment = () => {
 
 
-  const { navigate, enrolledCourses , calculateCourseDuration} = useContext(AppContext)
-  const [progressArray, setProgressArray] = useState([
-    {lectureCompleted: 2, totalLectures: 4},
-    {lectureCompleted: 4, totalLectures: 4},
-    {lectureCompleted: 1, totalLectures: 3},
-    {lectureCompleted: 5, totalLectures: 10},
-    {lectureCompleted: 3, totalLectures: 5},
-    {lectureCompleted: 0, totalLectures: 2},
-    {lectureCompleted: 7, totalLectures: 8},
-    {lectureCompleted: 4, totalLectures: 6},
-    {lectureCompleted: 9, totalLectures: 10},
-    {lectureCompleted: 1, totalLectures: 5},
-    {lectureCompleted: 6, totalLectures: 9}
-  ])
+  const { navigate, enrolledCourses , calculateCourseDuration, CalculateNoOfLectures, userData, fetchUserEnrolledCourses, backendUrl, getToken, calculateNoOfLectures} = useContext(AppContext)
+  const [progressArray, setProgressArray] = useState([])
 
 
+
+  const getCourseProgress = async () => {
+    try {
+      const token = await getToken();
+
+    const temProgressArray = await Promise.all(
+      enrolledCourses.map(async (course) => {
+        const {data} = await axios.post(
+          `${backendUrl}/api/user/get-course-progress`,
+          { courseId: course._id },{
+            headers: {
+  Authorization: `Bearer ${token}`,
+}})
+
+          let totalLectures = CalculateNoOfLectures(course)
+
+
+    const lectureCompleted = data.progressData
+  ? data.progressData.lecturecompleted.length
+  : 0
+
+    return {totalLectures, lectureCompleted}
+      })
+    )
+    setProgressArray(temProgressArray)
+  
+    
+    
+    } catch (error) {
+      toast.error(error.message)
+    }
+    
+  }
+
+  // Ensure we fetch latest enrolled courses when this page mounts or userData changes
+  useEffect(()=> {
+    if(userData) {
+      fetchUserEnrolledCourses()
+    } else {
+      // still attempt a fetch on mount; fetchUserEnrolledCourses handles missing auth safely
+      fetchUserEnrolledCourses()
+    }
+  }, [userData])
+
+
+    useEffect(()=> {
+    if(enrolledCourses.length > 0) {
+      getCourseProgress()
+    }
+  }, [enrolledCourses])
   return (
     <>
     <div className='md:px-36 px-8 pt-10 '>
