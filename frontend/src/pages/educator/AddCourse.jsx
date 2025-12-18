@@ -1,13 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import uniqid from 'uniqid'
 import Quill from 'quill'
 import { assets } from '../../assets/assets'
+import { AppContext } from '../../context/AppContext'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const AddCourse = () => {
 
 
   const quillref =  useRef(null)
   const editorref =  useRef(null)
+  const {backendUrl, getToken} = useContext(AppContext)
 
   const [courseTitle, setCourseTitle] = useState('')
   const [coursePrice, setCoursePrice] = useState(0)
@@ -95,7 +99,45 @@ const AddCourse = () => {
 
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    try {
+    
+      if(!image){
+        toast.error("thumbnail not selected !")
+      }
+
+      const courseData = {
+        courseTitle,
+        courseDescription: quillref.current.root.innerHTML,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters,
+      }
+
+      const  formData = new FormData()
+      formData.append('courseData', JSON.stringify(courseData))
+      formData.append('image', image)
+
+
+      const token = await getToken()
+
+      const {data} = await axios.post(backendUrl + '/api/educator/add-course', formData, {headers: {Authorization: `Bearer ${token}`}})
+
+
+      if (data.success) {
+        toast.success(data.message)
+        setCourseTitle('')
+        setCoursePrice(0)
+        setDiscount(0)
+        setImage(null)
+        setChapters([])
+        quillref.current.root.innerHTML = ""
+      }else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
 
@@ -114,7 +156,7 @@ const AddCourse = () => {
 
   return (
     <div className='h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
-       <form onSubmit={handleSubmit()} action="" className="flex flex-col gap-4 max-w-md w-full text-gray-500">
+       <form onSubmit={handleSubmit} action="" className="flex flex-col gap-4 max-w-md w-full text-gray-500">
 
         <div className="flex flex-col gap-1">
           <p>Course Title</p>
